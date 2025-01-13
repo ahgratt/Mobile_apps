@@ -1,38 +1,41 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import axios from 'axios';
 
 const DetailBookingScreen = ({ route, navigation }) => {
-  const { field, selectedDate, selectedTimeSlots } = route.params; // Data yang diterima dari BookingScreen
+  const { field, selectedDate, selectedTimeSlots } = route.params;
   const [namaPembooking, setNamaPembooking] = useState('');
   const [catatan, setCatatan] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleBooking = async () => {
     if (!namaPembooking.trim()) {
       Alert.alert('Error', 'Nama pembooking harus diisi!');
       return;
     }
-  
+
     const bookingData = {
-      id_user: 1, // ID pengguna yang login
+      id_user: 1,
       id_lapangan: field.id,
       tanggal_booking: selectedDate.toISOString().split('T')[0],
-      jam_booking: selectedTimeSlots.join(', '), // Gabungkan slot waktu
+      jam_booking: selectedTimeSlots.join(', '),
       nama_pembooking: namaPembooking,
       catatan,
+      nama_lapangan: field.nama_lapangan,
     };
-  
+
+    setLoading(true);
     try {
-      // Kirim data ke backend untuk disimpan
       const response = await axios.post('http://192.168.1.12/uas/transaksi.php', bookingData);
-  
+      setLoading(false);
+
       if (response.data.success) {
-        // Jika berhasil, pindah ke halaman BookingSuccessScreen
         navigation.navigate('BookingSuccessScreen', { bookingData });
       } else {
         Alert.alert('Error', response.data.message);
       }
     } catch (error) {
+      setLoading(false);
       console.error(error);
       Alert.alert('Error', 'Gagal menyimpan booking. Silakan coba lagi.');
     }
@@ -41,13 +44,13 @@ const DetailBookingScreen = ({ route, navigation }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Data Booking</Text>
-
-      {/* Informasi Booking */}
       <View style={styles.infoContainer}>
         <Text style={styles.label}>Ringkasan Pesanan Lapangan Anda</Text>
         <View style={styles.detailContainer}>
           <Text style={styles.detailText}>
-            {selectedDate.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+            {selectedDate.toLocaleDateString('id-ID', {
+              weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+            })}
           </Text>
           <Text style={styles.detailText}>{field.nama_lapangan}</Text>
           <TouchableOpacity style={styles.editButton}>
@@ -55,8 +58,6 @@ const DetailBookingScreen = ({ route, navigation }) => {
           </TouchableOpacity>
         </View>
       </View>
-
-      {/* Input Nama Pembooking */}
       <Text style={styles.label}>Nama Pembooking:</Text>
       <TextInput
         style={styles.input}
@@ -64,8 +65,6 @@ const DetailBookingScreen = ({ route, navigation }) => {
         value={namaPembooking}
         onChangeText={setNamaPembooking}
       />
-
-      {/* Input Catatan */}
       <Text style={styles.label}>Catatan:</Text>
       <TextInput
         style={[styles.input, styles.textArea]}
@@ -74,16 +73,16 @@ const DetailBookingScreen = ({ route, navigation }) => {
         onChangeText={setCatatan}
         multiline
       />
-
-      {/* Total Harga */}
       <Text style={styles.totalPrice}>
         Total Harga Booking: Rp.{field.harga * selectedTimeSlots.length}
       </Text>
-
-      {/* Tombol Bayar Booking */}
-      <TouchableOpacity style={styles.button} onPress={handleBooking}>
-        <Text style={styles.buttonText}>Bayar Booking</Text>
-      </TouchableOpacity>
+      {loading ? (
+        <ActivityIndicator size="large" color="#007AFF" />
+      ) : (
+        <TouchableOpacity style={styles.button} onPress={handleBooking}>
+          <Text style={styles.buttonText}>Bayar Booking</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 };

@@ -3,24 +3,24 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'reac
 import axios from 'axios';
 
 const LoginScreen = ({ setIsLoggedIn }) => {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogin = async () => {
-    if (!email || !password) {
-      Alert.alert('Error', 'Email dan password wajib diisi.');
+    if (!username || !password) {
+      Alert.alert('Error', 'Username dan password wajib diisi.');
       return;
     }
 
     try {
       const response = await axios.post('http://192.168.1.12/uas/login.php', {
-        username: email,
+        username: username,
         password: password,
       });
 
       if (response.data.status === 'success') {
         Alert.alert('Success', response.data.message);
-        setIsLoggedIn(true); // Set status login menjadi true setelah login berhasil
+        setIsLoggedIn(true);
       } else {
         Alert.alert('Error', response.data.message);
       }
@@ -38,10 +38,9 @@ const LoginScreen = ({ setIsLoggedIn }) => {
       <Text style={styles.subtitle}>Sewa lapangan menjadi mudah</Text>
       <TextInput
         style={styles.input}
-        placeholder="Email"
-        keyboardType="email-address"
-        value={email}
-        onChangeText={(text) => setEmail(text)}
+        placeholder="Username"
+        value={username}
+        onChangeText={(text) => setUsername(text)}
       />
       <TextInput
         style={styles.input}

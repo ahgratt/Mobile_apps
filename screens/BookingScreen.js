@@ -7,7 +7,7 @@ const BookingScreen = ({ route, navigation }) => {
   const { field } = route.params;
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedTimeSlots, setSelectedTimeSlots] = useState([]);
-  const [unavailableSlots, setUnavailableSlots] = useState([]); // Slot waktu yang sudah dipesan
+  const [unavailableSlots, setUnavailableSlots] = useState([]);
   const [showDatePicker, setShowDatePicker] = useState(false);
 
   const timeSlots = [
@@ -27,7 +27,7 @@ const BookingScreen = ({ route, navigation }) => {
       const response = await axios.get('http://192.168.1.12/uas/cekslot.php', {
         params: {
           id_lapangan: field.id,
-          tanggal_booking: date.toISOString().split('T')[0],
+          tanggal_booking: selectedDate.toISOString().split('T')[0],
         },
       });
   
@@ -59,7 +59,6 @@ const BookingScreen = ({ route, navigation }) => {
     }
   
     try {
-      // Kirim data ke backend untuk memvalidasi slot yang dipilih
       const response = await axios.post('http://192.168.1.12/uas/cekslot.php', {
         id_lapangan: field.id,
         tanggal_booking: selectedDate.toISOString().split('T')[0],
@@ -67,7 +66,6 @@ const BookingScreen = ({ route, navigation }) => {
       });
   
       if (response.data.success) {
-        // Jika slot masih tersedia, lanjutkan ke DetailBookingScreen
         navigation.navigate('DetailBookingScreen', {
           field,
           selectedDate,
@@ -114,11 +112,11 @@ const BookingScreen = ({ route, navigation }) => {
         numColumns={3}
         renderItem={({ item }) => (
             <TouchableOpacity
-            disabled={unavailableSlots.includes(item)} // Nonaktifkan jika slot sudah dipesan
+            disabled={unavailableSlots.includes(item)} 
             style={[
                 styles.timeSlot,
-                unavailableSlots.includes(item) ? styles.unavailableTimeSlot : null, // Gaya untuk slot yang sudah dipesan
-                selectedTimeSlots.includes(item) ? styles.selectedTimeSlot : null, // Gaya untuk slot yang dipilih
+                unavailableSlots.includes(item) ? styles.unavailableTimeSlot : null,
+                selectedTimeSlots.includes(item) ? styles.selectedTimeSlot : null, 
             ]}
             onPress={() => toggleTimeSlot(item)}
             >

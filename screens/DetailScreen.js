@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 
 const DetailScreen = ({ route, navigation }) => {
-  const { field } = route.params; // Ambil data lapangan dari parameter navigasi
+  const { field } = route.params;
 
   return (
     <View style={styles.container}>

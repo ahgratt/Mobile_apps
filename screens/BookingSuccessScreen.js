@@ -2,53 +2,33 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
 const BookingSuccessScreen = ({ route, navigation }) => {
-  const { bookingData } = route.params; // Data booking yang diterima dari DetailBookingScreen
+  const { bookingData } = route.params;
 
   return (
     <View style={styles.container}>
       <Text style={styles.successText}>Booking Berhasil!</Text>
       <Text style={styles.detailsTitle}>Detail Booking Anda:</Text>
-
-      {/* Tampilkan Detail Booking */}
       <View style={styles.detailsContainer}>
         <Text style={styles.detailItem}>
-          <Text style={styles.label}>Nama Lapangan: </Text>
-          {bookingData.field.nama_lapangan}
+          <Text style={styles.label}>Nama Lapangan: </Text>{bookingData.nama_lapangan}
         </Text>
         <Text style={styles.detailItem}>
-          <Text style={styles.label}>Tanggal Booking: </Text>
-          {bookingData.tanggal_booking}
+          <Text style={styles.label}>Tanggal Booking: </Text>{bookingData.tanggal_booking}
         </Text>
         <Text style={styles.detailItem}>
-          <Text style={styles.label}>Jam Booking: </Text>
-          {bookingData.jam_booking}
+          <Text style={styles.label}>Jam Booking: </Text>{bookingData.jam_booking}
         </Text>
         <Text style={styles.detailItem}>
-          <Text style={styles.label}>Nama Pembooking: </Text>
-          {bookingData.nama_pembooking}
+          <Text style={styles.label}>Nama Pembooking: </Text>{bookingData.nama_pembooking}
         </Text>
         {bookingData.catatan && (
           <Text style={styles.detailItem}>
-            <Text style={styles.label}>Catatan: </Text>
-            {bookingData.catatan}
+            <Text style={styles.label}>Catatan: </Text>{bookingData.catatan}
           </Text>
         )}
       </View>
-
-      {/* Tombol untuk kembali ke halaman utama */}
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => navigation.navigate('DashboardMain')}
-      >
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('DashboardMain')}>
         <Text style={styles.buttonText}>Kembali ke Dashboard</Text>
-      </TouchableOpacity>
-
-      {/* Tombol untuk melihat detail lagi */}
-      <TouchableOpacity
-        style={[styles.button, styles.secondaryButton]}
-        onPress={() => navigation.navigate('DetailBookingScreen', { bookingData })}
-      >
-        <Text style={[styles.buttonText, styles.secondaryButtonText]}>Lihat Detail Lagi</Text>
       </TouchableOpacity>
     </View>
   );

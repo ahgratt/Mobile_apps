@@ -2,19 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { View, Text, StyleSheet, FlatList, Image, ActivityIndicator, TouchableOpacity, Dimensions } from 'react-native';
 import axios from 'axios';
-import DetailScreen from './DetailScreen'; // Import DetailScreen
+import DetailScreen from './DetailScreen'; 
 
-const Stack = createStackNavigator();
-
-// Komponen utama Dashboard
+const Stack = createStackNavigator(); 
 const Dashboard = ({ navigation }) => {
   const [fields, setFields] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch data dari API
   useEffect(() => {
     axios
-      .get('http://192.168.1.12/uas/lapangan.php') // Ganti dengan URL PHP API Anda
+      .get('http://192.168.1.12/uas/lapangan.php')
       .then((response) => {
         setFields(response.data);
         setLoading(false);
@@ -49,7 +46,7 @@ const Dashboard = ({ navigation }) => {
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.card}
-            onPress={() => navigation.navigate('Detail', { field: item })} // Navigasi ke DetailScreen dengan parameter
+            onPress={() => navigation.navigate('Detail', { field: item })}
           >
             <Image source={{ uri: item.image }} style={styles.image} />
             <Text style={styles.name}>{item.nama_lapangan}</Text>
@@ -62,7 +59,6 @@ const Dashboard = ({ navigation }) => {
   );
 };
 
-// Stack Navigator untuk Dashboard
 const DashboardScreen = () => {
   return (
     <Stack.Navigator>
