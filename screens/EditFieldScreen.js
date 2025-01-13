@@ -44,12 +44,11 @@ const EditFieldScreen = ({ route, navigation }) => {
         body: JSON.stringify(fieldData),
       });
 
-      const responseData = await response.json(); // Menangkap respons JSON dari server
+      const responseData = await response.json();
 
-      // Cek apakah respons berhasil
       if (response.ok && responseData.message === "Lapangan berhasil diperbarui") {
         alert('Lapangan berhasil diperbarui!');
-        navigation.goBack(); // Kembali ke halaman sebelumnya setelah update berhasil
+        navigation.goBack();
       } else {
         alert('Gagal memperbarui lapangan. ' + (responseData.error || ''));
       }
