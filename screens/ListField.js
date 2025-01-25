@@ -10,7 +10,7 @@ const ListField = () => {
 
   const fetchFields = async () => {
     try {
-      const response = await axios.get('http://192.168.1.12/uas/lapangan.php');
+      const response = await axios.get('http://192.168.100.5/uas/lapangan.php');
       setFields(response.data);
     } catch (error) {
       console.error('Error fetching fields:', error);
@@ -19,15 +19,31 @@ const ListField = () => {
     }
   };
 
-  const deleteField = async (id) => {
-    try {
-      await axios.delete(`http://192.168.1.12/uas/lapangan.php?id=${id}`);
-      Alert.alert('Success', 'Lapangan berhasil dihapus!');
-      fetchFields();
-    } catch (error) {
-      console.error('Error deleting field:', error);
-      Alert.alert('Error', 'Gagal menghapus lapangan.');
-    }
+  const deleteField = (id) => {
+    Alert.alert(
+      'Confirm Deletion',
+      'Are you sure you want to delete this field?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          onPress: async () => {
+            try {
+              await axios.delete(`http://192.168.100.5/uas/lapangan.php?id=${id}`);
+              Alert.alert('Success', 'Lapangan berhasil dihapus!');
+              fetchFields();
+            } catch (error) {
+              console.error('Error deleting field:', error);
+              Alert.alert('Error', 'Gagal menghapus lapangan.');
+            }
+          },
+        },
+      ],
+      { cancelable: true }
+    );
   };
 
   const editField = (id) => {
@@ -38,7 +54,6 @@ const ListField = () => {
     navigation.navigate('AddFieldScreen');
   };
   
-
   useEffect(() => {
     fetchFields();
   }, []);
@@ -49,6 +64,11 @@ const ListField = () => {
         <ActivityIndicator size="large" color="#007AFF" />
       ) : (
         <>
+        <View style={styles.headerContainer}>
+          <View style={styles.headerTextContainer}>
+            <Text style={styles.greeting}>List Lapangan</Text>
+          </View>
+        </View>
           <TouchableOpacity style={styles.addButton} onPress={addField}>
             <Text style={styles.addButtonText}>Tambah Lapangan</Text>
           </TouchableOpacity>
@@ -60,8 +80,8 @@ const ListField = () => {
                 <Text style={styles.name}>{item.nama_lapangan}</Text>
                 <Text style={styles.details}>Alamat: {item.alamat}</Text>
                 <Text style={styles.details}>Deskripsi: {item.deskripsi}</Text>
-                <Text style={styles.details}>Ukuran: {item.ukuran}</Text>
-                <Text style={styles.details}>Kapasitas: {item.kapasitas}</Text>
+                <Text style={styles.details}>Ukuran: {item.ukuran_lapangan}</Text>
+                <Text style={styles.details}>Kapasitas: {item.kapasitas_lapangan} Orang</Text>
                 <Text style={styles.details}>Harga: {item.harga}</Text>
                 <View style={styles.buttonContainer}>
                   <TouchableOpacity style={styles.editButton} onPress={() => editField(item.id)}>
@@ -81,10 +101,24 @@ const ListField = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff', padding: 20 },
+  container: { flex: 1, backgroundColor: '#fff'},
+  headerContainer: {
+    backgroundColor: '#007AFF',
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+    paddingTop: 70, // Adjust for better vertical alignment
+    paddingBottom: 50,
+    paddingHorizontal: 20,
+    flexDirection: 'row',
+    alignItems: 'center', // Center align content
+    marginBottom: 20,
+  },
+  headerTextContainer: { flex: 1, alignItems: 'center' },
+  greeting: { fontSize: 28, color: '#fff', fontWeight: 'bold' },
   addButton: {
     backgroundColor: '#007AFF',
     padding: 15,
+    marginHorizontal: 20,
     borderRadius: 8,
     marginBottom: 20,
     alignItems: 'center',
@@ -95,6 +129,7 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 8,
     marginBottom: 15,
+    marginHorizontal: 20,
     elevation: 2,
   },
   name: { fontSize: 18, fontWeight: 'bold', marginBottom: 5 },

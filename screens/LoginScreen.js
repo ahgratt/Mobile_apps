@@ -13,10 +13,12 @@ const LoginScreen = ({ setIsLoggedIn }) => {
     }
 
     try {
-      const response = await axios.post('http://192.168.1.12/uas/login.php', {
+      const response = await axios.post('http://192.168.100.5/uas/login.php', {
         username: username,
         password: password,
       });
+
+      console.log('Response:', response.data); // Log the response
 
       if (response.data.status === 'success') {
         Alert.alert('Success', response.data.message);
@@ -25,7 +27,7 @@ const LoginScreen = ({ setIsLoggedIn }) => {
         Alert.alert('Error', response.data.message);
       }
     } catch (error) {
-      console.error(error);
+      console.error('Error:', error); // Log the error
       Alert.alert('Error', 'Terjadi kesalahan pada server.');
     }
   };

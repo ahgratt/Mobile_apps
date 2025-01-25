@@ -24,19 +24,21 @@ const BookingScreen = ({ route, navigation }) => {
 
   const fetchUnavailableSlots = async (date) => {
     try {
-      const response = await axios.get('http://192.168.1.12/uas/cekslot.php', {
+      const response = await axios.get('http://192.168.100.5/uas/cekslot.php', {
         params: {
           id_lapangan: field.id,
-          tanggal_booking: selectedDate.toISOString().split('T')[0],
+          tanggal_booking: date.toISOString().split('T')[0],
         },
       });
-  
+
       if (response.data.success) {
         setUnavailableSlots(response.data.bookedSlots);
+      } else {
+        Alert.alert('Error', response.data.message || 'Gagal mengambil data slot waktu.');
       }
     } catch (error) {
-      console.error(error);
-      Alert.alert('Error', 'Gagal mengambil data slot waktu.');
+      console.error('Error fetching unavailable slots:', error);
+      Alert.alert('Error', `Terjadi kesalahan saat memuat slot waktu: ${error.message}`);
     }
   };
 
@@ -45,11 +47,15 @@ const BookingScreen = ({ route, navigation }) => {
   }, [selectedDate]);
 
   const toggleTimeSlot = (timeSlot) => {
-    if (selectedTimeSlots.includes(timeSlot)) {
-      setSelectedTimeSlots(selectedTimeSlots.filter((slot) => slot !== timeSlot));
-    } else {
-      setSelectedTimeSlots([...selectedTimeSlots, timeSlot]);
+    if (unavailableSlots.includes(timeSlot)) {
+      return; // Do nothing if the slot is unavailable
     }
+
+    setSelectedTimeSlots((prev) =>
+      prev.includes(timeSlot)
+        ? prev.filter((slot) => slot !== timeSlot)
+        : [...prev, timeSlot]
+    );
   };
 
   const handleConfirmBooking = async () => {
@@ -57,14 +63,14 @@ const BookingScreen = ({ route, navigation }) => {
       Alert.alert('Error', 'Silakan pilih setidaknya satu slot waktu.');
       return;
     }
-  
+
     try {
-      const response = await axios.post('http://192.168.1.12/uas/cekslot.php', {
+      const response = await axios.post('http://192.168.100.5/uas/cekslot.php', {
         id_lapangan: field.id,
         tanggal_booking: selectedDate.toISOString().split('T')[0],
         jam_booking: selectedTimeSlots.join(', '),
       });
-  
+
       if (response.data.success) {
         navigation.navigate('DetailBookingScreen', {
           field,
@@ -75,20 +81,25 @@ const BookingScreen = ({ route, navigation }) => {
         Alert.alert('Error', response.data.message);
       }
     } catch (error) {
-      console.error(error);
-      Alert.alert('Error', 'Gagal memvalidasi slot waktu. Silakan coba lagi.');
+      console.error('Error confirming booking:', error);
+      Alert.alert('Error', `Gagal memproses booking: ${error.message}`);
     }
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Pilih Jadwal Booking</Text>
+
       {/* Tanggal Booking */}
       <View style={styles.section}>
         <Text style={styles.label}>Tanggal Booking:</Text>
         <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.datePickerButton}>
           <Text style={styles.dateText}>
-            {selectedDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+            {selectedDate.toLocaleDateString('id-ID', {
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric',
+            })}
           </Text>
         </TouchableOpacity>
         {showDatePicker && (
@@ -98,34 +109,37 @@ const BookingScreen = ({ route, navigation }) => {
             display="default"
             onChange={(event, date) => {
               setShowDatePicker(false);
-              if (date) {
-                setSelectedDate(date);
-              }
+              if (date) setSelectedDate(date);
             }}
           />
         )}
       </View>
+
       {/* Slot Waktu */}
       <FlatList
         data={timeSlots}
         keyExtractor={(item) => item}
         numColumns={3}
         renderItem={({ item }) => (
-            <TouchableOpacity
-            disabled={unavailableSlots.includes(item)} 
+          <TouchableOpacity
+            disabled={unavailableSlots.includes(item)}
             style={[
-                styles.timeSlot,
-                unavailableSlots.includes(item) ? styles.unavailableTimeSlot : null,
-                selectedTimeSlots.includes(item) ? styles.selectedTimeSlot : null, 
+              styles.timeSlot,
+              unavailableSlots.includes(item) ? styles.unavailableTimeSlot : null,
+              selectedTimeSlots.includes(item) ? styles.selectedTimeSlot : null,
             ]}
             onPress={() => toggleTimeSlot(item)}
-            >
+          >
             <Text style={styles.timeSlotText}>{item}</Text>
-            </TouchableOpacity>
-  )}
-/>
+          </TouchableOpacity>
+        )}
+      />
+
       {/* Total Harga */}
-      <Text style={styles.totalPrice}>Total Harga Booking: Rp.{field.harga * selectedTimeSlots.length}</Text>
+      <Text style={styles.totalPrice}>
+        Total Harga Booking: Rp.{field.harga * selectedTimeSlots.length}
+      </Text>
+
       {/* Tombol Konfirmasi */}
       <TouchableOpacity style={styles.confirmButton} onPress={handleConfirmBooking}>
         <Text style={styles.confirmButtonText}>Konfirmasi Pembayaran</Text>

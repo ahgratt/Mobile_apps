@@ -3,6 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
+import { Alert } from 'react-native';
 import DashboardScreen from './screens/DashboardScreen';
 import DetailScreen from './screens/DetailScreen';
 import BookingScreen from './screens/BookingScreen';
@@ -13,6 +14,7 @@ import AddFieldScreen from './screens/AddFieldScreen';
 import EditFieldScreen from './screens/EditFieldScreen';
 import DetailBookingScreen from './screens/DetailBookingScreen';
 import BookingSuccessScreen from './screens/BookingSuccessScreen';
+import BookedLapangan from './screens/BookedLapangan';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -52,7 +54,7 @@ const ListFieldStack = () => (
     <Stack.Screen
       name="ListFieldMain"
       component={ListField}
-      options={{ title: 'Daftar Lapangan' }}
+      options={{ headerShown: false }}
     />
     <Stack.Screen
       name="AddFieldScreen"
@@ -66,7 +68,6 @@ const ListFieldStack = () => (
     />
   </Stack.Navigator>
 );
-
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -82,7 +83,7 @@ export default function App() {
   }, []);
 
   const getUserFromStorage = async () => {
-    return null;
+    return null; // Simulate user retrieval
   };
 
   return (
@@ -98,6 +99,8 @@ export default function App() {
                 iconName = focused ? 'document' : 'document-outline';
               } else if (route.name === 'ListField') {
                 iconName = focused ? 'list' : 'list-outline';
+              } else if (route.name === 'BookedLapangan') {
+                iconName = focused ? 'calendar' : 'calendar-outline';
               }
               return <Ionicons name={iconName} size={size} color={color} />;
             },
@@ -108,6 +111,7 @@ export default function App() {
         >
           <Tab.Screen name="Dashboard" component={DashboardStack} />
           <Tab.Screen name="ListField" component={ListFieldStack} />
+          <Tab.Screen name="BookedLapangan" component={BookedLapangan} />
           <Tab.Screen name="Report" component={ReportScreen} />
         </Tab.Navigator>
       ) : (

@@ -15,7 +15,7 @@ const DetailBookingScreen = ({ route, navigation }) => {
     }
 
     const bookingData = {
-      id_user: 1,
+      id_user: 3,
       id_lapangan: field.id,
       tanggal_booking: selectedDate.toISOString().split('T')[0],
       jam_booking: selectedTimeSlots.join(', '),
@@ -24,10 +24,14 @@ const DetailBookingScreen = ({ route, navigation }) => {
       nama_lapangan: field.nama_lapangan,
     };
 
+    console.log('Booking Data:', bookingData); // Log the booking data
+
     setLoading(true);
     try {
-      const response = await axios.post('http://192.168.1.12/uas/transaksi.php', bookingData);
+      const response = await axios.post('http://192.168.100.5/uas/transaksi.php', bookingData);
       setLoading(false);
+
+      console.log('Response:', response.data); // Log the response
 
       if (response.data.success) {
         navigation.navigate('BookingSuccessScreen', { bookingData });
@@ -36,7 +40,7 @@ const DetailBookingScreen = ({ route, navigation }) => {
       }
     } catch (error) {
       setLoading(false);
-      console.error(error);
+      console.error('Error:', error); // Log the error
       Alert.alert('Error', 'Gagal menyimpan booking. Silakan coba lagi.');
     }
   };
